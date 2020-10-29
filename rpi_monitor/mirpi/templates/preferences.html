@@ -1,0 +1,178 @@
+{% extends "base.html" %} {% block head %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> {% endblock head %} {% block header %}
+<div class="header">{{ legend }}</div>
+
+{% endblock header %} {% block content %}
+<div class="container-fluid">
+    <form method="POST" action="">
+        <h4>
+            {% if pref.broker_connected == 1 %}
+            <span class="badge badge-success">MQTT Client Connected: {{ pref.date_connected.strftime('%d-%b-%Y %H:%M %Z') }}</span> {% else %}
+            <span class="badge badge-danger">MQTT Client  Disconnected: {{ pref.date_connected.strftime('%d-%b-%Y %H:%M %Z') }}</span> {% endif %}
+        </h4>
+        <hr>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-6">
+
+                    <div class="shadow p-3 mb-5 bg-white rounded">
+                        <h1>Email Preferences</h1>
+                        <h4>Select the topics for what you'd like to recieve emails for.</h4>
+                        <hr>
+                        <div class="form-check">
+                            <ul class="form-group" style="margin: 2% 2%; ">
+                                {{ form.email.label(class="form-control-label") }} {% if form.email.errors %} {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.email.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.email(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                            <input type="submit" class="btn btn-outline-success" value="Test Email" name="submit_button">
+                            <hr>
+                            <br>
+                            <p> <span>{{ form.new_scanned(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.new_scanned.label(class="form-check-label") }}  </span></p>
+                            <p><span>{{ form.new_device_added(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.new_device_added.label(class="form-check-label") }}  </span></p>
+                            <p> <span>{{ form.temp_exceeded(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.temp_exceeded.label(class="form-check-label") }}  </span></p>
+                            <p> <span>{{ form.curr_exceeded(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.curr_exceeded.label(class="form-check-label") }}  </span></p>
+                            <p> <span>{{ form.shutdown_all(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.shutdown_all.label(class="form-check-label") }}  </span></p>
+                        </div>
+                        <h4>Internal Global Variables</h4>
+                        <div class="row">
+                            <div class="col-3">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.curr_upper.label(class="form-control-label") }} {% if form.curr_upper.errors %} {{ form.curr_upper(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.curr_upper.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.curr_upper(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                            <div class="col-3">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.curr_lower.label(class="form-control-label") }} {% if form.curr_lower.errors %} {{ form.curr_lower(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.curr_lower.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.curr_lower(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                            <div class="col-3">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.curr_max.label(class="form-control-label") }} {% if form.curr_max.errors %} {{ form.curr_max(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.curr_max.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.curr_max(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                            <div class="col-3">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.temp_max.label(class="form-control-label") }} {% if form.temp_max.errors %} {{ form.temp_max(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.temp_max.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.temp_max(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.net_scan.label(class="form-control-label") }} {% if form.net_scan.errors %} {{ form.net_scan(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.net_scan.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.net_scan(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                            <div class="col-4">
+                                <ul class="form-group" style="margin: 2% 2%; ">
+                                    {{ form.status_threash.label(class="form-control-label") }} {% if form.status_threash.errors %} {{ form.status_threash(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.status_threash.errors %}
+                                        <span> {{ error }}</span> {% endfor %}
+                                    </div>
+                                    {% else %} {{ form.status_threash(class="form-control form-control-lg") }} {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-outline-info" value="Save Preferences" name="submit_button">
+                        </div>
+                        <hr>
+                        <br>
+                        <h2>Aditional Functions</h2>
+                        <h4 class="warning">Potentially Volitile Functions</h4>
+                        <label><input type="checkbox" onchange="document.getElementById('acknowledged_button').disabled = !this.checked;
+                    document.getElementById('acknowledged_button2').disabled = !this.checked;
+                    document.getElementById('acknowledged_button3').disabled = !this.checked;
+                    document.getElementById('acknowledged_button4').disabled = !this.checked;
+                    document.getElementById('acknowledged_button5').disabled = !this.checked;
+                    
+                    " unchecked> Acknowledged.</label><br>
+
+                        <input type="submit" class="btn btn-outline-danger" value="Flush Logs" name="submit_button" style="margin: 5px 5px" id="acknowledged_button" disabled>
+                        <input type="submit" class="btn btn-outline-primary" value="Disable All Device Graphs" name="submit_button" style="margin: 5px 5px" id="acknowledged_button2" disabled>
+                        <input type="submit" class="btn btn-outline-success" value="Enable All Device Graphs" name="submit_button" style="margin: 5px 5px" id="acknowledged_button3" disabled>
+                        <input type="submit" class="btn btn-outline-danger" value="Shutdown All Devices" name="submit_button" style="margin: 5px 5px" id="acknowledged_button4" disabled>
+                        <input type="submit" class="btn btn-outline-danger" value="Delete All Scanned Devices" name="submit_button" style="margin: 5px 5px" id="acknowledged_button5" disabled>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="shadow p-3 mb-5 bg-white rounded">
+                        <h1>Newly Found Devices from Network Scan</h1>
+                        <h4>Devices connected to local network that have have not been added to the Main database.</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>IP Address</th>
+                                    <th>MAC Address</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in device %}
+                                <tr>
+                                    <th>{% if i.new == 1 %}
+                                        <h4><span class="badge badge-success">New</span></h4>
+                                        {% else %}
+                                        <h4><span class="badge badge-primary">Update</span></h4>
+                                        {% endif %}
+                                    </th>
+                                    <td>{{ i.date_added.strftime('%d-%b-%Y %H:%M %Z') }}</td>
+                                    <td>{{ i.ip }}</td>
+                                    <td>{{ i.mac }}</td>
+                                    <td><a type="button" class="btn btn-outline-success" href="{{url_for('new_device_found', dev_id = i.id)}}" style="margin: 1px 1px; height: 25px;">Dev</a>
+                                        <a type="button" class="btn btn-outline-secondary" href="{{url_for('new_hub_found', dev_id = i.id)}}" style="margin: 1px 1px;  height: 25px;">Hub</a>
+                                        <a type="button" class="btn btn-outline-danger" href="{{url_for('new_device_found_del', dev_id = i.id)}}" style="margin: 1px 1px; height: 25px;">Del</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+</div>
+</form>
+</div>
+
+{% endblock content %}

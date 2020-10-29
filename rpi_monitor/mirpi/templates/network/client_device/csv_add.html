@@ -1,0 +1,33 @@
+
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+{% endblock head %}
+
+{% block header %}
+<div class="header">{{ legend }}</div>
+
+{% endblock header %}
+
+{% block content %}
+<div class="container-fluid"> 
+    <div class="shadow-sm p-3 mb-5 bg-white rounded">
+        <div style="margin-left: 5%; margin-right: 5%; margin-top: 0px; margin-bottom: 5%;"> 
+            <fieldset class="form-group">
+            <h3 class="border-bottom mb-4">Import CSV Config</h3>
+            Upload a CSV file in the specified format.  Please Note that all fields must be entered in the CSV.  Devices configured in the CSV file must be powered on before uploading,
+            as certificates, and configuration files will be copied over as part of the initiation process. <p class="text-success">Root credetials are required, but no passwords will be stored in the database.</p>
+            <p>If required, please download the <a href="/static/device_data_template.csv/" download="device_template.csv" class="text-info">template</a> to insert your data.</p>
+            <br>
+            <form method=post enctype=multipart/form-data>
+                <input type=file name=file class="form-control-file">
+                <br>
+                <input type=submit value=Upload class="btn btn-outline-primary">
+            </form>
+        </div>
+    </div>
+</div>
+    
+{% endblock content %}

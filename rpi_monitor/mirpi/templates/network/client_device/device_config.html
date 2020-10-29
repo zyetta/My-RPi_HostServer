@@ -1,0 +1,123 @@
+ {% extends "base.html" %} {% block head %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> {% endblock head %} {% block header %}
+<div class="header">{{ legend }}</div>
+
+{% endblock header %} {% block content %}
+<div class="container-fluid">
+    <div class="shadow p-3 mb-5 bg-white rounded">
+        <div style="margin-left: 5%; margin-right: 5%; margin-top: 0px; margin-bottom: 5%;">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <h1>Device Config</h1>
+                    <hr>
+                    <br>
+                    <div class="row">
+                        <div class="col-4">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.name.label(class="form-control-label") }} {% if form.name.errors %} {{ form.name(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.name(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-4">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.hostname.label(class="form-control-label") }} {% if form.hostname.errors %} {{ form.hostname(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.hostname.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.hostname(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-4">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.ip.label(class="form-control-label") }} {% if form.ip.errors %} {{ form.ip(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.ip.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.ip(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-4">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.mac.label(class="form-control-label") }} {% if form.mac.errors %} {{ form.mac(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.mac.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.mac(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+
+
+                        <div class="col-2">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.hub.label(class="form-control-label") }} {% if form.hub.errors %} {{ form.hub(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.hub.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.hub(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-2">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.hub_location.label(class="form-control-label") }} {% if form.hub_location.errors %} {{ form.hub_location(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.hub_location.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.hub_location(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            <h2>Administration Information</h2>
+                            <p>Please enter information that will allow the host to execute commands such as shutdown, etc... Please note, the password will be hashed before stored in the database.</p>
+                        </div>
+
+                        <div class="col-3">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.username.label(class="form-control-label") }} {% if form.username.errors %} {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.username.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.username(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-3">
+                            <ul class="form-group" style="margin: 2% 2%;">
+                                {{ form.password.label(class="form-control-label") }} {% if form.password.errors %} {{ form.password(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                    <span> {{ error }}</span> {% endfor %}
+                                </div>
+                                {% else %} {{ form.password(class="form-control form-control-lg") }} {% endif %}
+                            </ul>
+
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <span>{{ form.copyssh(class="form-check-input") }}</span> &emsp;&emsp;
+                                <span> {{ form.copyssh.label(class="form-check-label") }}  </span>
+                            </div>
+                            <p class="text-danger">Please note, that for the SSH certificates to be copied, the client must be powered on with SSH enabled, and the client must be visible to the host.
+                            </p>
+                        </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-info") }}
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    {% endblock content %}

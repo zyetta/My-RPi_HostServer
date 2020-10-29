@@ -1,0 +1,142 @@
+{% extends "base.html" %} {% block head %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+
+<style type="text/css">
+    body {
+        background: #e5e6e9 !important;
+    }
+    /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+</style>
+
+{% endblock head %} {% block header %}
+<div class="header">Hub Management</div>
+{% endblock header %} {% block content %}
+<div class="container-fluid">
+    <form method="POST" action="" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col">
+                <div class="shadow-sm p-3 mb-5 bg-white rounded">
+                    <div class="col-3" style="float:left; float:top">
+                        <div class="input-group mb-3">
+                            <a type="button" class="btn btn-outline-secondary" href="{{url_for('add_hub')}}"><i class="fas fa-plus" aria-hidden="true"></i> ADD HUB</a>
+                            <a type="button" class="btn btn-outline-danger" href="{{url_for('pingDevices')}}"><i class="fas fa-network-wired" aria-hidden="true"></i> Ping All Devices</a>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-3" style="float:right; float:top">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend" id="button-addon3">
+
+                                <input type="submit" class="btn btn-outline-success" value="Power On" name="submit_button">
+                                <input type="submit" class="btn btn-outline-danger" value="Power Off" name="submit_button">
+                            </div>
+                            <input type="text" class="form-control " name="text_box" placeholder="Select Amount of Devices" aria-label="Example text with two button addons" aria-describedby="button-addon3">
+                        </div>
+                    </div>
+                    <br>
+
+
+
+
+
+
+
+                    <div style="text-align: center; text-align: top;margin: 10px 10px;">
+                        {% for page_num in hubs.iter_pages(left_edge = 1, right_edge = 1, left_current = 1, right_current = 2) %} {% if page_num %} {% if hubs.page == page_num %}
+                        <a class="btn btn-info mb-6" href="{{ url_for('dev_man', page=page_num) }}"> {{ page_num }}</a> {% else %}
+                        <a class="btn btn-outline-info mb-6" href="{{ url_for('dev_man', page=page_num) }}"> {{ page_num }}</a> {% endif %} {% else %} ... {% endif %} {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="shadow p-3 mb-5 bg-white rounded">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Options</th>
+                        <th scope="col">IP Address</th>
+                        <th scope="col">MAC Address</th>
+                        <th scope="col">Device 1</th>
+                        <th scope="col">Device 2</th>
+                        <th scope="col">Device 3</th>
+                        <th scope="col">Device 4</th>
+                        <th scope="col">Device 5</th>
+                        <th scope="col">Device 6</th>
+                        <th scope="col">Device 7</th>
+                        <th scope="col">Device 8</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for i in hubs.items %}
+                    <tr>
+                        <th scope="row">{{i.id}}</th>
+                        <th>
+                            <a type="button" class="btn btn-outline-success" href="{{url_for('pwr_up_hub', dev_id = i.id)}}" style="margin: 1px 1px; width:25px; height: 25px;"><i class="fas fa-play"  style="float:center" aria-hidden="true"></i></a>
+                            <a type="button" class="btn btn-outline-danger" href="{{url_for('pwr_down_hub', dev_id = i.id)}}" style="margin: 1px 1px; width:25px; height: 25px;"><i class="fas fa-stop"  style="float:center" aria-hidden="true"></i></a>
+                            <hr>
+                            <a type="button" class="btn btn-outline-info" href="{{url_for('hub_initiation', dev_id = i.id)}}" style="margin: 1px 1px; width:25px; height: 25px;"><i class="far fa-handshake"  style="float:center" aria-hidden="true"></i></a>
+                            <a type="button" class="btn btn-outline-danger" href="{{url_for('del_hub', dev_id = i.id)}}" style="margin: 1px 1px; width:25px; height: 25px;"><i class="far fa-trash-alt"  style="float:center" aria-hidden="true"></i></a>
+                            <a type="button" class="btn btn-outline-secondary" href="{{url_for('mod_hub', dev_id = i.id)}}" style="margin: 1px 1px; width:25px; height: 25px;"><i class="fas fa-sliders-h"  style="float:center" aria-hidden="true"></i></a>
+                            <hr>
+                            <div class="form-check">
+                                {% if i.graph == 1 %}
+                                <input type="checkbox" class="form-check-input" id="checkInput{{ i.id  }}" autocomplete="off" style="padding-left:5em" onchange="show_on_graph('{{ i.id }}')" checked/>
+                                <label class="form-check-label" for="checkInput{{ i.id  }}" style="padding-left:2em">Display on Graphs</label> <i class="fas fa-check" style="color:green; display:none;" id="Complete_proc{{ i.id  }}"></i> {% else %}
+                                <input type="checkbox" class="form-check-input" id="checkInput{{ i.id  }}" autocomplete="off" style="padding-left:2em" onchange="show_on_graph('{{ i.id }}')" />
+                                <label class="form-check-label" for="checkInput{{ i.id  }}" style="padding-left:2em">Display on Graphs</label> <i class="fas fa-check" style="color:green; display:none;" id="Complete_proc{{ i.id  }}"></i> {% endif %}
+                            </div>
+                            <div onload="check_box('{{i.id}}', '{{i.graph}}')"></div>
+                        </th>
+                        <th>{{i.ip}}</th>
+                        <th>{{i.mac}}</th>
+                        {% for j in i.devices %} {% if j.status == 'Active' %}
+                        <span class="text-success"><th>{{j.name}} | {{j.hub_location}}</th>  </span> {% elif j.status == 'Idle' %}
+                        <span class="text-warning"><th>{{j.name}} | {{j.hub_location}}</th>  </span> {% else %}
+                        <span class="text-danger"><th>{{j.name}} | {{j.hub_location}}</th>   </span> {% endif %} {% endfor %}
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    function show_on_graph(x) {
+        var device_id = x;
+        var show = 0;
+        if ($("#checkInput" + device_id).is(':checked')) {
+            show = 1
+        } else {
+            show = 0
+        }
+        request = $.ajax({
+            url: "/network/hubs/show",
+            type: 'POST',
+            data: {
+                id: device_id,
+                show: show
+            }
+        });
+        request.done(function(data) {
+            $("#Complete_proc" + device_id).fadeIn(1000).fadeOut(1000)
+
+        })
+
+    }
+</script>
+
+{% endblock content %}

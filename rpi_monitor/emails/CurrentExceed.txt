@@ -1,0 +1,10 @@
+Date Added:   2020-07-08 18:48:43
+Hostname:   test1
+IP Address: 1.1.1.1 
+MAC Address:    8B-E1-38-84-57-B5
+Username:   root
+HUB:    1
+HUB Pin:    1
+Current Measured:   2.5033326504908526
+Voltage Measured:   5.080535769270715
+        

@@ -1,0 +1,5 @@
+Date Added:   2020-10-07 10:16:44.434146
+        IP Address: 10.42.0.2 
+        MAC Address:    B8:27:EB:C5:00:AB
+        Type (1 = New / 0 = Update):   0
+        

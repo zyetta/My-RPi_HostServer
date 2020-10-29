@@ -1,0 +1,54 @@
+ {% extends "base.html" %} {% block head %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/networkgraph.js"></script>
+
+{% endblock head %} {% block header %}
+<div class="header">Dashboard</div>
+
+{% endblock header %} {% block content %} {% for i in updates %} {% endfor %}
+<div class="container-fluid" style="background-color: #e5e6e9;">
+    <div class="row">
+        <div class="col-12">
+            <div class="shadow-sm p-3 mb-5rounded" style="height:400px; background-color: #ffffff;" id="container3"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="shadow-sm p-3 mb-5 rounded" style="height:350px; background-color: #ffffff;" id="client_state"></div>
+        </div>
+        <div class="col-8">
+            <div div class="shadow-sm p-3 mb-5 rounded" style="height:350px; background-color: #ffffff;" id="resource_usage"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="shadow-sm p-3 mb-5 rounded" style="height:400px; background-color: #ffffff;" id="voltage"></div>
+        </div>
+        <div class="col-6">
+            <div class="shadow-sm p-3 mb-5 rounded" style="height:400px; background-color: #ffffff;" id="current"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="shadow-sm p-3 mb-5rounded" style="height:400px; background-color: #ffffff;" id="container4"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="shadow-sm p-3 mb-5rounded" style="height:400px; background-color: #ffffff;" id="totals"></div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/Dashboard/live_graphs.js') }}"></script>
+<script src="{{ url_for('static', filename='js/Dashboard/resources.js') }}"></script>
+<script src="{{ url_for('static', filename='js/Dashboard/host_info.js') }}"></script>
+<script src="{{ url_for('static', filename='js/Dashboard/totals_charts.js') }}"></script>
+
+{% if count > 1 %}
+<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+{% endif %} {% endblock content %}

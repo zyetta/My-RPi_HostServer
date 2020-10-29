@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css') }}">
+  <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  
+  <style type="text/css">
+    body { 
+      font-size: 12px;
+      background:  #e5e6e9 !important; 
+    } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+ </style>
+ 
+ </style>
+<link rel="shortcut icon" href="/static/images/mi_pi2.png">
+
+  {% if title %}
+  <title>My-RPi - {{title}}</title>
+  {% else %}
+  <title>My-RPi</title>
+  {% endif %}
+
+{% block head %}{% endblock head %}
+
+</head>
+<body style="background-color: #e5e6e9;">
+
+<div class="wrapper">
+    <div class="sidebar">
+      <h2>My-RPi</h2>
+      <p style="text-align: center; " class="text-muted text-white">Network Manager for RPi<br> by JJ Maree</p>
+      {% if current_user.is_authenticated %}
+        <p style="text-align: center; color: #ffffff">Logged in as: {{ current_user.username }}</p>
+      {% else %}
+      <p style="text-align: center; " class="text-muted text-white">Logged Out</p>
+      {% endif %}
+      
+        
+        <ul>
+            <li><a href="{{url_for('home_page')}}"><i class="fas fa-house-user" aria-hidden="true"></i>Home</a></li>
+            {% if current_user.is_authenticated %}     
+            <li><a href="{{url_for('dev_man')}}"><i class="fas fa-cubes" aria-hidden="true"></i>Devices</a></li>   
+            <li><a href="{{url_for('hub_management')}}"><i class="fas fa-network-wired" aria-hidden="true"></i>Hubs</a></li>   
+            <li><a href="{{url_for('backup_alerts')}}"><i class="fas fa-cogs" aria-hidden="true"></i>Settings</a></li>   
+            <li><a href="{{url_for('user_logout')}}"><i class="fas fa-lock" aria-hidden="true"></i>Logout</a></li>
+            {% else %}
+            <li><a href="{{url_for('user_registration')}}"><i class="fas fa-id-card" aria-hidden="true"></i>Register</a></li>
+            <li><a href="{{url_for('user_login')}}"><i class="fas fa-unlock" aria-hidden="true"></i>Login</a></li>
+            
+            {% endif %}
+        </ul> 
+        
+        <div style="position: absolute; bottom: 0; margin-top:80%; margin-left: 10%; margin-right: 10%;">
+          
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+             {% for category, message in messages %}  
+                            
+              <div class="alert alert-{{ category }}">     
+                {{message}}                           
+              </div>                   
+              {% endfor %}
+            {% endif %}
+          {% endwith %} 
+          
+        </div>
+    </div>
+    <div class="main_content">
+      {% block header %}{% endblock header %}
+        <div class="info">  
+
+          
+          {% if messages %}           
+          {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+
+        {% block jquery %}{% endblock %}
+      </div>
+      </div>
+
+</div>
+
+</body>
+</html>

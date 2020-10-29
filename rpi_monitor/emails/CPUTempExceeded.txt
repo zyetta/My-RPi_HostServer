@@ -1,0 +1,12 @@
+Date Added:   2020-10-07 11:31:28.515598
+Hostname:   Test
+IP Address: 10.42.0.2 
+MAC Address:    B8-27-EB-C5-00-AB
+Username:   pi
+HUB:    None
+HUB Pin:    0
+CPU Temperature:    68.756
+CPU Usage:  26.2
+MEM Usage:  359837696.0
+MEM Total:  971038720.0
+        
