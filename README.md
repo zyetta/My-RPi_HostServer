@@ -6,10 +6,10 @@
 
 ***
 ## My-RPi Host Server.
-Central application used to manage and monitor the power state of paired Hubs and RPis.
+The central application used to manage and monitor the power state of paired Hubs and RPis.
 
 ### Inforamtion
-All packages and dependacies have been pre-configured, appart from the following which require manual configuration.
+All packages and dependencies have been pre-configured, apart from the following which requires manual configuration.
 
 #### 1. SSH Certificates
 
@@ -33,7 +33,7 @@ sudo docker-compose up --build
 ```
 
 #### 4. Database Table Creation
-For the inital deployment, the **rpi_monitor** scheme has be be created. 
+For the initial deployment, the **rpi_monitor** scheme must be created. 
 This is done with the following lines of code where the default database credentials are as follow
 ```sh
 username: root
