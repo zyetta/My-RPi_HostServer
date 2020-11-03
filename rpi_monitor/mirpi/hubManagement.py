@@ -25,20 +25,7 @@ import mirpi.cnst as const
 #    User Functions
 # ----------------------------------------------------------------------------------------------
 
-# Title:     Powers off all relays
-# Desc:      commands to hub to power down all relays.
-# Author:    JJ MAREE
-# Last Mod:  01-07-2020
-def relayOff(HUB, COMMAND):
-    for i in range(8):
-        payload = "{'0':'" + str(HUB.ip) + "','1':'" + str(HUB.id) + "','2':'" + str(i) + "','3':'" + str(COMMAND) + "'}"
-        payload = str(payload)
-        print(payload)
-        client_3.publish("hub/" + str(HUB.id), payload, qos=2, retain=True)
-        time.time.sleep(1)
-    payload = "{'0':'" + str(HUB.ip) + "','1':'" + str(HUB.id) + "','2':'" + str(0) + "','3':'" + str(COMMAND) + "'}"
-    client_3.publish("hub/" + str(HUB.id), payload, qos=2, retain=True)
-        
+ 
 # ----------------------------------------------------------------------------------------------
 #   Web Page Routes
 # ----------------------------------------------------------------------------------------------
@@ -70,11 +57,17 @@ def hub_management():
     return render_template('/network/hub/hub_dashboard.html', title='Hubs', hubs=hubs, legend='Hub Management')
 
 
+# Title:     Power off hub
+# Desc:      Powers off entire hub
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
 def powerOffHub(device):
     hub = Hubs.query.get_or_404(device)
+    devs = Devices.query.filter_by(hub = device)
     for i in range(9):
         try:
-            sshClient(i.username, i.ip, "sudo shutdown -h now &")
+            a = devs[i]
+            sshClient(a.username, a.ip, "sudo shutdown -h now &")
             time.sleep(5)
             flash('Device Shutdown Successful', 'success')
             hubControl(hub, 0, i)
@@ -83,8 +76,9 @@ def powerOffHub(device):
             flash('Error connecting to device', 'danger')
             pass
 
-# Title:     Device Delete
-# Desc:      Form to Delete Device Manually
+
+# Title:     Powers off hub function
+# Desc:      Powers off all ports connected to hub
 # Author:    JJ MAREE
 # Last Mod:  01-07-2020
 @app.route("/network/hubs/<dev_id>/off", methods=['GET', 'POST'])
@@ -95,12 +89,15 @@ def pwr_down_hub(dev_id):
 
 
 
-
+# Title:     Powers on hub function
+# Desc:      Powers on all ports connected to hub
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
 def powerOnHub(device):
     hub = Hubs.query.get_or_404(device)
     for i in range(9):
         try:
-            if(Hub_Control(hub, 1, i)):  
+            if(hubControl(hub, 1, i)):  
                 pass              
             else:
                 flash('Error Sending Command', 'danger')
@@ -108,8 +105,10 @@ def powerOnHub(device):
         except:
             pass
 
-# Title:     Device Delete
-# Desc:      Form to Delete Device Manually
+
+
+# Title:     Powers on hub
+# Desc:      Powers on all ports connected to hub
 # Author:    JJ MAREE
 # Last Mod:  01-07-2020
 @app.route("/network/hubs/<dev_id>/on", methods=['GET', 'POST'])
@@ -167,7 +166,10 @@ def add_hub():
     return render_template('/network/hub/hub_config.html', title='Add Device', form=form, legend='Create Device')
 
 
-
+#Title:      Modify hub
+# Desc:      Modifies hub information
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
 @app.route("/network/hubs/<dev_id>/modify", methods=['GET', 'POST'])
 @login_required
 def mod_hub(dev_id):
@@ -202,6 +204,11 @@ def shutdown_dev(dev_id):
     return redirect(url_for('dev_man'))
 
 
+
+# Title:     Shutdown Device
+# Desc:      Graceful shutdown function
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
 def devShutdown(dev_id):
     device = Devices.query.get_or_404(dev_id)
     hub = Hubs.query.get_or_404(device.hub)
@@ -210,7 +217,7 @@ def devShutdown(dev_id):
         time.sleep(const.safeShutdown)
     except Exceotion as e:
         print(e)       
-        Hub_Control(hub, 0, device.hub_location)
+        hubControl(hub, 0, device.hub_location)
         device.state = "Powered Off"
         db.session.commit()
 
@@ -227,7 +234,7 @@ def poweron_dev(dev_id):
     device = Devices.query.get_or_404(dev_id)
     try:
         hub = Hubs.query.get_or_404(device.hub)
-        Hub_Control(hub, 1, device.hub_location)
+        hubControl(hub, 1, device.hub_location)
         device.state = "Idle"
         db.session.commit()
         flash('Command Executed', 'success')
@@ -240,8 +247,6 @@ def poweron_dev(dev_id):
 # Desc:      Initiates the hub, and assinges it a unique ID
 # Author:    JJ MAREE
 # Last Mod:  01-07-2020
-
-
 @app.route("/network/devices/<dev_id>/init", methods=['GET', 'POST'])
 @login_required
 def hub_initiation(dev_id):
