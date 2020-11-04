@@ -6,7 +6,7 @@ from time import sleep, time
 import json, ast
 import mirpi.cnst as const
 import subprocess, platform
-from mirpi.preferences import CPUTempExceeded
+from mirpi.emailServer import CPUTempExceeded
   
 # Title:     Store Sensor Data
 # Desc:      Stores the sensor data that is recieved from the relevant handler function
