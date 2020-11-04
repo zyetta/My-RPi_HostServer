@@ -15,7 +15,7 @@ import csv
 from time import sleep
 from mirpi.emailServer import NewDeviceAdded
 from mirpi.globalVariables import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
-from mirpi.user_functions import ssh_client_init, ssh_client, ssh_ping, ping_devices
+from mirpi.user_functions import sshInit, sshClient
 from mirpi.mqttHandle import Hub_Init, Hub_Control
 
 

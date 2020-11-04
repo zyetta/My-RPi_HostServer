@@ -11,7 +11,7 @@ import mirpi.cnst as const
 def resourceSample():
     while(1):
         print("Getting Device Resources")
-        ping_devices()
+        devResourceSample()
         sleep(int(const.pingPeriod))
 
 

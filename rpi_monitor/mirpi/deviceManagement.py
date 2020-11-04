@@ -16,7 +16,8 @@ from mirpi.emailServer import NewDeviceAdded
 import mirpi.cnst as const
 from mirpi.user_functions import sshInit, sshClient
 from mirpi.mqttHandle import  hubControl
-
+from threading import Thread
+from mirpi.hubManagement import devShutdown
 # ----------------------------------------------------------------------------------------------
 #    Global Variables
 # ----------------------------------------------------------------------------------------------
@@ -301,11 +302,11 @@ def new_device_found(dev_id):
 
     if form.validate_on_submit():
         try:
-            if(len(Hubs.query.get_or_404(int(data[x][5])).devices) > 8):
+            if(len(Hubs.query.get_or_404(form.hub.data).devices) > 9):
                 hubLoc = None
                 flash('Error Assigning Device to Hub', 'danger')
             else:
-                hubLoc = form.hub.data
+                hubLoc = form.hub_location.data
         except Exception as e:
             print(e)
             hubLoc = None
@@ -321,12 +322,12 @@ def new_device_found(dev_id):
             if form.copyssh.data:
                 state = sshInit(form.username.data, form.ip.data, form.password.data)
                 if(state == 0):   
-                    device.initiated = "1"
-                    device.last_accessed = datetime.utcnow()
+                    device_hold.initiated = "1"
+                    device_hold.last_accessed = datetime.utcnow()
                     flash("  Certificates Copied", 'success')                            
                 else:
                     flash("  Device Inaccessible", 'danger')
-                    device.initiated = "0"
+                    device_hold.initiated = "0"
             try:
                 NewDevices.query.filter_by(mac=form.mac.data).delete()
             except:

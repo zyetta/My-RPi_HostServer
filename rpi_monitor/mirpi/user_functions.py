@@ -6,7 +6,7 @@ import os
 import paramiko
 import nmap
 import mirpi.cnst as const
-
+from threading import Thread
 from mirpi.models import Power, Sensors, Preferences, Devices, Hubs, NewDevices
 from mirpi.emailServer import NewFound
 from datetime import datetime, date
@@ -22,7 +22,6 @@ from mirpi import engine, db
 # Funtion: Resamples total sensor data, sorting it by device ID and month.
 
 def totalPower(device):
-    pw = []
     sensor_df = pd.read_sql(
         "SELECT * FROM sensors where hub_id =  %(uid)s", engine, params={"uid": device.id})
     try:
@@ -87,7 +86,7 @@ def devResourceSample():
                 response = os.system("ping -c 1 " + device.ip)
                 if(response == 0):
                     print("Accessing: " + str(device.ip))
-                    ssh_client(device.username, device.ip,
+                    sshClient(device.username, device.ip,
                             "python3 ./control/resource_check.py &")
                 else:
                     device.status = 'Powered Off'
@@ -123,6 +122,7 @@ def sshInit(user, server, password):
         ssh.close()
         return 0
     except Exception as e:
+        print(e)
         return 1
 
 
@@ -138,8 +138,7 @@ def sshClient(user, server, command):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
         ssh.connect(server, username=user, key_filename=const.CERTPVT)
-        stdin, stdout, stderr = ssh.exec_command(command)
-        output = stdout.readlines()
+        ssh.exec_command(command)
         ssh.close()
     except Exception as e:
         print(e)
@@ -172,7 +171,6 @@ def NetScan():
             host_list.append([mac_hold, ipv4_hold])
         for i in host_list:
             try:
-                device = None
                 hold = None
                 ip_hold = str(i[1])
                 mac_hold = str(i[0])

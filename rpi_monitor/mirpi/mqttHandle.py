@@ -1,4 +1,4 @@
-from mirpi.models import  User, Devices, Preferences, Power
+from mirpi.models import  User, Devices, Preferences, Power, Hubs, Sensors
 from mirpi import db
 from datetime import datetime
 import paho.mqtt.client as mqtt
@@ -6,7 +6,87 @@ from time import sleep, time
 import json, ast
 import mirpi.cnst as const
 import subprocess, platform
+from mirpi.preferences import CPUTempExceeded
+  
+# Title:     Store Sensor Data
+# Desc:      Stores the sensor data that is recieved from the relevant handler function
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
 
+
+def storeSensor(hold):
+    pref_hold = Preferences.query.get_or_404(1)
+    try:
+        sensor = Sensors(
+            unix=int(time()),
+            curr=float(hold["CURR"]),
+            volt=float(hold["VOLT"]),
+            temp=float(hold["TEMP"]),
+            hub_id=int(hold["ID"]))
+        print(sensor)
+        device = Hubs.query.filter_by(id=int(hold["ID"])).first()
+        if device:
+            if float(hold["CURR"]) > float(pref_hold.curr_max):
+                print("Exceeded")
+                if pref_hold.curr_exceeded:
+                    try:
+                        try:
+                            print("Exceeded")
+                        except Exception as e:
+                            print(e)
+                    except Exception as e:
+                        print(e)
+        try:
+            db.session.add(sensor)
+            db.session.commit()
+        except:
+            db.session.rollback()
+    except Exception as e:
+        print(e)
+
+
+# Title:     Store Device Information
+# Desc:      Store the Devices Information that is recieved from the relevant handler function
+# Author:    JJ MAREE
+# Last Mod:  01-07-2020
+def storeDevInfo(hold):
+    pref_hold = Preferences.query.get_or_404(1)
+    device = Devices.query.filter_by(ip=str(hold["IP"])).first()
+    try:
+        if device:
+            print(hold)
+            device.cpu_usage = float(hold["CPU"])
+            device.memory_usage = float(hold['MEM'])
+            device.memory_total = float(hold['MEMTOT'])
+            mac_hold = str(hold['MAC'])
+            mac = mac_hold[2:4] + "-" + mac_hold[4:6] + "-" + mac_hold[6:8] + \
+                "-" + mac_hold[8:10] + "-" + \
+                mac_hold[10:12] + "-" + mac_hold[12:14]
+            device.mac = str.upper(mac)
+            device.cpu_temp = float(hold['TEMP'])
+            device.last_accessed = datetime.utcnow()
+            device.initiated = 1
+
+            if(float(hold["CPU"]) > pref_hold.status_threash):
+                device.status = "Active"
+            else:
+                device.status = "Idle"
+            if float(hold['TEMP']) > pref_hold.temp_max:
+                if Preferences.query.first().temp_exceeded:
+                    try:
+                        CPUTempExceeded(Preferences.query.first().email,
+                                        device.ip, device.mac, device.hub, device.hub_location,
+                                        device.username, device.last_accessed, device.hostname,
+                                        float(hold['TEMP']), device.memory_usage, device.cpu_usage, device.memory_total)
+                    except Exception as e:
+                        print(e)
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+    except Exception as e:
+        db.session.rollback()
+        print(e)
 
 # Title:     MQTT On Connect Handler
 # Desc:      Handler function executed on client connect
@@ -134,83 +214,4 @@ def hubControl(HUB, COMMAND, Device_Pin):
     except Exception as e:
         print(e)
         return 0
-    
-# Title:     Store Sensor Data
-# Desc:      Stores the sensor data that is recieved from the relevant handler function
-# Author:    JJ MAREE
-# Last Mod:  01-07-2020
-
-
-def storeDevInfo(hold):
-    pref_hold = Preferences.query.get_or_404(1)
-    try:
-        sensor = Sensors(
-            unix=int(time()),
-            curr=float(hold["CURR"]),
-            volt=float(hold["VOLT"]),
-            temp=float(hold["TEMP"]),
-            hub_id=int(hold["ID"]))
-        print(sensor)
-        device = Hubs.query.filter_by(id=int(hold["ID"])).first()
-        if device:
-            if float(hold["CURR"]) > float(pref_hold.curr_max):
-                print("Exceeded")
-                if pref_hold.curr_exceeded:
-                    try:
-                        try:
-                            print("Exceeded")
-                        except Exception as e:
-                            print(e)
-                    except Exception as e:
-                        print(e)
-        try:
-            db.session.add(sensor)
-            db.session.commit()
-        except:
-            db.session.rollback()
-    except Exception as e:
-        print(e)
-
-
-# Title:     Store Device Information
-# Desc:      Store the Devices Information that is recieved from the relevant handler function
-# Author:    JJ MAREE
-# Last Mod:  01-07-2020
-def storeDevInfo(hold):
-    pref_hold = Preferences.query.get_or_404(1)
-    device = Devices.query.filter_by(ip=str(hold["IP"])).first()
-    try:
-        if device:
-            print(hold)
-            device.cpu_usage = float(hold["CPU"])
-            device.memory_usage = float(hold['MEM'])
-            device.memory_total = float(hold['MEMTOT'])
-            mac_hold = str(hold['MAC'])
-            mac = mac_hold[2:4] + "-" + mac_hold[4:6] + "-" + mac_hold[6:8] + \
-                "-" + mac_hold[8:10] + "-" + \
-                mac_hold[10:12] + "-" + mac_hold[12:14]
-            device.mac = str.upper(mac)
-            device.cpu_temp = float(hold['TEMP'])
-            device.last_accessed = datetime.utcnow()
-            device.initiated = 1
-
-            if(float(hold["CPU"]) > pref_hold.status_threash):
-                device.status = "Active"
-            else:
-                device.status = "Idle"
-            if float(hold['TEMP']) > pref_hold.temp_max:
-                if Preferences.query.first().temp_exceeded:
-                    try:
-                        CPUTempExceeded(Preferences.query.first().email,
-                                        device.ip, device.mac, device.hub, device.hub_location,
-                                        device.username, device.last_accessed, device.hostname,
-                                        float(hold['TEMP']), device.memory_usage, device.cpu_usage, device.memory_total)
-                    except Exception as e:
-                        print(e)
-        try:
-            db.session.commit()
-        except:
-            db.session.rollback()
-    except Exception as e:
-        db.session.rollback()
-        print(e)
+  

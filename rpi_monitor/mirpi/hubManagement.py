@@ -114,9 +114,8 @@ def powerOnHub(device):
 @app.route("/network/hubs/<dev_id>/on", methods=['GET', 'POST'])
 @login_required
 def pwr_up_hub(dev_id):
-    hub = Hubs.query.get_or_404(dev_id)
     Thread(target = powerOnHub, args = (dev_id,)).start()
-    flash('Powering On All Hubs', 'success')
+    flash('Powering On All Hub', 'success')
     return redirect(url_for('hub_management'))
 
 
@@ -129,8 +128,8 @@ def pwr_up_hub(dev_id):
 @app.route("/network/hubs/<dev_id>/delete", methods=['GET', 'POST'])
 @login_required
 def del_hub(dev_id):
-    sensors = Sensors.query.filter_by(hub_id=dev_id).delete()
-    power = Power.query.filter_by(device_id=dev_id).delete()
+    Sensors.query.filter_by(hub_id=dev_id).delete()
+    Power.query.filter_by(device_id=dev_id).delete()
     hub = Hubs.query.get_or_404(dev_id)
     db.session.delete(hub)
     db.session.commit()
@@ -159,6 +158,7 @@ def add_hub():
             return redirect(url_for('hub_management'))
 
         except Exception as e:
+            print(e)
             flash('Error Adding Device to Hub', 'danger')
     else:
         flash('Error Adding Hub', 'danger')
@@ -184,6 +184,7 @@ def mod_hub(dev_id):
             return redirect(url_for('hub_management'))
 
         except Exception as e:
+            print(e)
             flash('Error Adding Device to Hub', 'danger')
     elif request.method == 'GET':
         form.ip.data = hub.ip
@@ -215,7 +216,7 @@ def devShutdown(dev_id):
     try:
         sshClient(device.username, device.ip, "sudo shutdown -h now &")
         time.sleep(const.safeShutdown)
-    except Exceotion as e:
+    except Exception as e:
         print(e)       
         hubControl(hub, 0, device.hub_location)
         device.state = "Powered Off"
