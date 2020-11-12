@@ -217,7 +217,8 @@ def devShutdown(dev_id):
         sshClient(device.username, device.ip, "sudo shutdown -h now &")
         time.sleep(const.safeShutdown)
     except Exception as e:
-        print(e)       
+        print(e)   
+    finally:    
         hubControl(hub, 0, device.hub_location)
         device.state = "Powered Off"
         db.session.commit()
